@@ -122,6 +122,38 @@ Example Output Structure:
       }
     ]
   },
+  "investigation_checklist": {
+    "system_checks": [
+      "Verify card status in core banking system",
+      "Check card management system for cancellation records",
+      "Review online banking access logs for 2025-06-15 to 2025-06-25"
+    ],
+    "records_to_examine": [
+      "Customer service call logs for cancellation request",
+      "Transaction history for account 12345678",
+      "Merchant authorization records for 'Unknown Online Store'"
+    ],
+    "data_points_to_verify": [
+      "Exact date and time of original cancellation request",
+      "Transaction amount and merchant details (£500 to 'Unknown Online Store')",
+      "Customer's current address and contact information"
+    ],
+    "customer_information_to_confirm": [
+      "Customer identity verification",
+      "Current address on file vs provided address",
+      "Authorized signatories on the account"
+    ],
+    "timeline_analysis": [
+      "Gap between cancellation request and unauthorized transaction",
+      "Sequence of events leading to customer discovery",
+      "Helpline contact attempt timeline and duration"
+    ],
+    "regulatory_compliance_checks": [
+      "DISP 1.4.1 R acknowledgement timeline compliance",
+      "PSR investigation timeline requirements (15-35 business days)",
+      "FCA PRIN 6 customer treatment standards"
+    ]
+  },
   "confidence_score": 0.95
 }
 
