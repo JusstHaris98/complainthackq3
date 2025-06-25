@@ -1,26 +1,41 @@
-from services.extraction_service import extract_details
-from services.categorization_service import categorize_complaint
-from services.fca_mapping import flag_fca_rules
-from agents.mock_athena_agent import mock_athena_response
+import ollama
+import asyncio
+import json
 
-def process_complaint(text: str):
-    details = extract_details(text)
-    categories = categorize_complaint(details)
-    fca_flags = flag_fca_rules(details)
-    athena_data = mock_athena_response()
+# Read the system prompt from the file
+with open('prompt.txt', 'r') as f:
+    SYSTEM_PROMPT = f.read()
 
-    return {
-        "complaint_id": "AUTO_GEN_COMPLAINT_001",
-        "status": "Awaiting Review",
-        "customer_id": details.get("account_number", "UNKNOWN"),
-        "summary": details["summary"],
-        "extracted_details": details,
-        "athena_query_parameters": {
-            "question": "fraudulent transaction handling protocol and initial steps",
-            "product_type": details.get("product_affected", "Unknown")
-        },
-        "categorization": categories,
-        "regulatory_flag": fca_flags,
-        "proposed_action_plan": athena_data["action_plan"],
-        "confidence_score": 0.95
-    }
+async def process_complaint(text: str, send_log):
+    await send_log({"type": "thought", "message": "Starting complaint processing with Ollama..."})
+    await asyncio.sleep(1)
+
+    try:
+        await send_log({"type": "thought", "message": "Connecting to Ollama and sending prompt..."})
+        
+        response = ollama.chat(
+            model='YOUR_MODEL_NAME_HERE', # IMPORTANT: Change this to your model name
+            messages=[
+                {'role': 'system', 'content': SYSTEM_PROMPT},
+                {'role': 'user', 'content': text},
+            ],
+            format='json'
+        )
+        
+        await send_log({"type": "thought", "message": "Received response from Ollama."})
+        await asyncio.sleep(1)
+
+        # The response from ollama.chat is a dictionary, get the message content
+        message_content = response['message']['content']
+        
+        # The content is a JSON string, so we parse it
+        parsed_response = json.loads(message_content)
+
+        await send_log({"type": "result", "data": parsed_response})
+        return parsed_response
+
+    except Exception as e:
+        error_message = f"An error occurred while processing with Ollama: {e}"
+        await send_log({"type": "thought", "message": error_message})
+        # Optionally, return a specific error structure to the client
+        return {"error": error_message}
