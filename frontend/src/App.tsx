@@ -13,8 +13,7 @@ const App = () => {
 
   useEffect(() => {
     const connect = () => {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const socket = new WebSocket(`${protocol}//${window.location.host}/ws/logs`);
+      const socket = new WebSocket('ws://localhost:8000/ws/logs');
       socket.onopen = () => {
         console.log('WebSocket connected');
       };
