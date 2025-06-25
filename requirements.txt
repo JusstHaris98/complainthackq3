@@ -1,5 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pydantic
 websockets
 ollama
+python-multipart
+gunicorn
+python-dotenv
+redis

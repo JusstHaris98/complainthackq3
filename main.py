@@ -6,12 +6,19 @@ from agents.complaint_agent import process_complaint
 from models.complaint_input import ComplaintInput
 import asyncio
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
+cors_origins = os.getenv("CORS_ORIGINS", '["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000"]')
+cors_origins = json.loads(cors_origins) if isinstance(cors_origins, str) else cors_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,11 +35,18 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             await websocket.receive_text()
     except Exception:
-        connections.remove(websocket)
+        connections.discard(websocket)
 
 async def send_log(message: dict):
+    disconnected = set()
     for connection in connections:
-        await connection.send_text(json.dumps(message))
+        try:
+            await connection.send_text(json.dumps(message))
+        except Exception:
+            disconnected.add(connection)
+    
+    for connection in disconnected:
+        connections.discard(connection)
 
 @app.get("/complaint/test")
 def test():
@@ -57,4 +71,5 @@ async def analyze_complaint(complaint: ComplaintInput):
     complaint_history.append(response)
     return response
 
-app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
+# Commented out to run frontend and backend separately
+# app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
