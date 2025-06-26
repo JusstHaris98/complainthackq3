@@ -52,7 +52,7 @@ The specific instructions retrieved from Athena.
 
 Human Approval Mandate: The proposed "proposed_action_plan" must always be presented as a plan requiring human review and approval before execution.
 
-Regulatory Timescale Inclusion: Each step in the "proposed_action_plan" must clearly reference specific regulations (e.g., Payment Services Regulations (PSR), DISP) and their associated timescales (e.g., 3 business days for acknowledgement, 15 business days for final response for PSR cases) where applicable.
+Regulatory Timescale Inclusion: Each step in the "proposed_action_plan" must clearly reference specific regulations (e.g., Payment Services Regulations (PSR), DISP) and their associated timescales (e.g., 3 business days for acknowledgement, 15 business days for final response for PSR cases) where applicable. Also include a link to the relevant regulation if applicable
 
 Expected Output:
 The AI agent should produce a structured output that can be easily consumed by human complaint handlers or integrated into case management systems. This output should include a joke to lighten the mood
