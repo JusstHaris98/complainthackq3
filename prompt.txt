@@ -15,12 +15,7 @@ Propose Action Plan for Human Approval: Generate a clear, step-by-step action pl
 Input Data (Examples/Types):
 The AI agent will receive customer complaints solely as free-text input. The agent must be capable of extracting all necessary information from this unstructured text.
 
-Free-text complaint (e.g., from a customer email, chat, or direct input):
-
-Example: "I am writing to complain about a fraudulent transaction on my current account. On 15th June 2025, a payment of £500 was made to 'Unknown Online Store' which I did not authorise. I checked my online banking statement this morning and noticed it. I tried calling your helpline but was on hold for over 30 minutes. This is completely unacceptable. I want my money back and for you to investigate how this happened immediately. My account number is 12345678."
-
-Example Input:
-"I am writing to complain about a fraudulent transaction on my current account. On 15th June 2025, a payment of £500 was made to 'Unknown Online Store' which I did not authorise. I checked my online banking statement this morning and noticed it. I tried calling your helpline but was on hold for over 30 minutes. This is completely unacceptable. I want my money back and for you to investigate how this happened immediately. My account number is 12345678."
+Free-text complaint (e.g., from a customer email, chat, or direct input)
 
 Constraints & Considerations:
 FCA Compliance: All outputs must reflect an understanding of FCA principles, particularly Treating Customers Fairly (TCF), DISP rules (Dispute Resolution: Complaints), and data protection (GDPR).
@@ -62,98 +57,4 @@ Regulatory Timescale Inclusion: Each step in the "proposed_action_plan" must cle
 Expected Output:
 The AI agent should produce a structured output that can be easily consumed by human complaint handlers or integrated into case management systems. This output should include a joke to lighten the mood
 
-Example Output Structure:
-{
-  "complaint_id": "AUTO_GEN_COMPLAINT_001",
-  "status": "Awaiting Review",
-  "customer_id": "CUST123456", // Extracted from free text if present or default/placeholder if not.
-  "summary": "Customer reports an unauthorized £500 transaction on their current account dated 15th June 2025. Issue discovered via online banking on 25th June. Customer also complains about excessive wait times (35 mins) on the helpline. Desired outcome: full refund and immediate investigation into the fraudulent activity. Account number: 12345678.",
-  "extracted_details": {
-    "issue_type": "Fraudulent Transaction / Unauthorised Payment",
-    "product_affected": "Current Account",
-    "amount_disputed": "£500",
-    "incident_date": "2025-06-15",
-    "date_reported_to_bank": "2025-06-25",
-    "contact_method_issue": "Phone Helpline (excessive wait time)",
-    "customer_desired_outcome": ["Refund of £500", "Investigation into fraud"],
-    "account_number": "12345678", // Extracted from free text
-    "is_vulnerable_customer_flag": "N/A (no indication)",
-    "references_fca_rule_implicitly": ["PRIN 2.1 (Integrity)", "PRIN 2.5 (Customer's interests)", "DISP 1.3 (General principles)"]
-  },
-  "athena_query_parameters": {
-    "question": "fraudulent transaction handling protocol and initial steps",
-    "product_type": "Current Account"
-  },
-  "categorization": {
-    "primary_category": "Fraud",
-    "secondary_category": "Service Quality (Contact Centre)",
-    "fca_complaint_type": "Payment Services - Unauthorised Payment"
-  },
-  "regulatory_flag": {
-    "potential_breaches": ["DISP 1.3.1 R (Prompt investigation)", "DISP 1.4.1 R (Communication with complainant)"],
-    "relevant_principles": ["PRIN 2 (Conduct Business with Integrity)", "PRIN 6 (Treat Customers Fairly)"]
-  },
-  "proposed_action_plan": {
-    "requires_human_approval": true,
-    "steps": [
-      {
-        "step_number": 1,
-        "description": "Acknowledge receipt of the complaint to the customer within **3 business days**, as per **FCA DISP 1.4.1 R**. Ensure empathetic tone reflecting customer's reported frustration with helpline wait times.",
-        "responsible_party": "Complaint Handler",
-        "details_from_athena": "DISP 1.4.1 R requirements for initial acknowledgement."
-      },
-      {
-        "step_number": 2,
-        "description": "Initiate immediate fraud investigation for current account (ID: 12345678) regarding the £500 unauthorized transaction on 2025-06-15. This falls under **Payment Services Regulations (PSR)**. The investigation and resolution, including refund if applicable, must typically be completed within **15 business days** for PSR cases, though in exceptional circumstances this can extend to 35 business days with appropriate notification. This involves flagging the transaction internally and reviewing recent account activity for similar patterns. Refer to Athena's 'Fraudulent Transaction Investigation Protocol - Current Accounts' for detailed steps.",
-        "responsible_party": "Fraud Investigation Team / Complaint Handler",
-        "details_from_athena": "Specific protocol for unauthorized payments, including timelines for investigation under PSR."
-      },
-      {
-        "step_number": 3,
-        "description": "Log a separate service quality incident for the excessive helpline wait time (35 minutes on 2025-06-25). This should be routed to the contact center management for review and internal process improvement. While not under strict PSR timescales, good practice under **FCA PRIN 6 (Treating Customers Fairly)** dictates prompt internal review. Refer to Athena's 'Service Quality Incident Management - Contact Centre' for logging procedures.",
-        "responsible_party": "Complaint Handler / Operations Lead",
-        "details_from_athena": "Guidelines for logging and escalating service quality issues."
-      },
-      {
-        "step_number": 4,
-        "description": "Communicate an estimated timeline for investigation and resolution to the customer, aligning with **FCA DISP 1.6.1 R (Final Response timeframe)**, which for PSR cases is typically within **15 business days** (or 35 business days in exceptional cases with notification). Obtain human approval before sending this communication.",
-        "responsible_party": "Complaint Handler",
-        "details_from_athena": "Standard timelines for fraud investigations and complaint resolution under relevant regulations."
-      }
-    ]
-  },
-  "investigation_checklist": {
-    "system_checks": [
-      "Verify card status in core banking system",
-      "Check card management system for cancellation records",
-      "Review online banking access logs for 2025-06-15 to 2025-06-25"
-    ],
-    "records_to_examine": [
-      "Customer service call logs for cancellation request",
-      "Transaction history for account 12345678",
-      "Merchant authorization records for 'Unknown Online Store'"
-    ],
-    "data_points_to_verify": [
-      "Exact date and time of original cancellation request",
-      "Transaction amount and merchant details (£500 to 'Unknown Online Store')",
-      "Customer's current address and contact information"
-    ],
-    "customer_information_to_confirm": [
-      "Customer identity verification",
-      "Current address on file vs provided address",
-      "Authorized signatories on the account"
-    ],
-    "timeline_analysis": [
-      "Gap between cancellation request and unauthorized transaction",
-      "Sequence of events leading to customer discovery",
-      "Helpline contact attempt timeline and duration"
-    ],
-    "regulatory_compliance_checks": [
-      "DISP 1.4.1 R acknowledgement timeline compliance",
-      "PSR investigation timeline requirements (15-35 business days)",
-      "FCA PRIN 6 customer treatment standards"
-    ]
-  },
-  "confidence_score": 0.95
-}
 
