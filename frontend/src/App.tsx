@@ -295,6 +295,16 @@ const App = () => {
                 {/* Athena Outputs Section */}
                 <div className="result-section athena-section">
                   <h3>🧠 Athena Knowledge System Outputs</h3>
+                  
+                  <div className="athena-subsection">
+                    <h4>Knowledge Base Integration:</h4>
+                    <p className="athena-info">
+                      This analysis incorporates UK banking regulation guidelines, FCA DISP rules, 
+                      and Payment Services Regulations retrieved from the Athena knowledge system 
+                      to ensure regulatory compliance and proper case treatment.
+                    </p>
+                  </div>
+                  
                   {currentResult.athena_query_parameters && (
                     <div className="athena-subsection">
                       <h4>Query Parameters:</h4>
@@ -326,15 +336,6 @@ const App = () => {
                       </div>
                     </div>
                   )}
-                  
-                  <div className="athena-subsection">
-                    <h4>Knowledge Base Integration:</h4>
-                    <p className="athena-info">
-                      This analysis incorporates UK banking regulation guidelines, FCA DISP rules, 
-                      and Payment Services Regulations retrieved from the Athena knowledge system 
-                      to ensure regulatory compliance and proper case treatment.
-                    </p>
-                  </div>
                 </div>
 
                 {currentResult.investigation_checklist && (

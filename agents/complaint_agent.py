@@ -50,15 +50,21 @@ REQUIRED JSON FORMAT - You MUST include ALL these fields:
     "steps": [
       {{
         "step_number": 1,
-        "description": "Action description using British English",
+        "description": "Acknowledge receipt of complaint within 3 business days as per FCA DISP 1.4.1 R. Send empathetic response confirming we understand the customer's frustration and provide complaint reference number. Explain next steps and expected timeline for resolution.",
         "responsible_party": "Complaint Handler",
-        "details_from_athena": "UK banking regulation guidance applied"
+        "details_from_athena": "FCA DISP 1.4.1 R requirements for complaint acknowledgement and customer communication standards"
       }},
       {{
         "step_number": 2,
-        "description": "Second action required",
+        "description": "Conduct comprehensive investigation including account transaction review, system audit checks, and verification of customer identity. Examine all relevant records from incident date through to complaint submission. Document findings thoroughly for regulatory compliance.",
         "responsible_party": "Fraud Investigation Team",
-        "details_from_athena": "FCA DISP rules compliance"
+        "details_from_athena": "UK banking fraud investigation protocols and Payment Services Regulations requirements"
+      }},
+      {{
+        "step_number": 3,
+        "description": "Prepare detailed response letter outlining investigation findings, any compensation due, and preventative measures implemented. Ensure response meets FCA TCF principles and includes clear explanation of next steps if customer remains unsatisfied.",
+        "responsible_party": "Complaint Handler", 
+        "details_from_athena": "FCA DISP final response requirements and Treating Customers Fairly obligations"
       }}
     ]
   }},
@@ -78,6 +84,16 @@ CRITICAL RULES:
 5. Always use current date {current_date} for incident_date
 6. secondary_category must be provided and relevant
 7. Base action plans on UK banking regulations
+
+ACTION PLAN REQUIREMENTS:
+- Each step description must be detailed and specific (minimum 25 words)
+- Include specific timescales (e.g., "within 3 business days", "within 15 business days")
+- Reference relevant regulations (e.g., "FCA DISP 1.4.1 R", "Payment Services Regulations")
+- Be specific about what actions will be taken (not generic descriptions)
+- Tailor actions to the specific complaint content provided
+- Include customer communication requirements
+- Specify investigation procedures relevant to the complaint type
+- Mention compliance and documentation requirements
 
 COMPLAINT TEXT TO ANALYSE:
 {text}
