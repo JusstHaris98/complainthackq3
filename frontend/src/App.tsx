@@ -14,6 +14,12 @@ interface Complaint {
   confidence_score?: number;
   athena_query_parameters?: any;
   investigation_checklist?: any;
+  human_validation?: {
+    status: 'pending' | 'approved' | 'rejected';
+    validated_by?: string;
+    validation_date?: string;
+    feedback_notes?: string;
+  };
 }
 
 const App = () => {
@@ -23,6 +29,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentResult, setCurrentResult] = useState<Complaint | null>(null);
+  const [isUpdatingExternalSystems, setIsUpdatingExternalSystems] = useState(false);
 
   useEffect(() => {
     const connect = () => {
@@ -61,6 +68,61 @@ const App = () => {
       fetchHistory();
     }
   }, [activeTab]);
+
+  const handleValidation = async (status: 'approved' | 'rejected', complaintId: string) => {
+    try {
+      const feedbackTextarea = document.getElementById(`feedback-${complaintId}`) as HTMLTextAreaElement;
+      const feedbackNotes = feedbackTextarea?.value || '';
+      
+      const response = await fetch(`/complaint/${complaintId}/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status,
+          feedback_notes: feedbackNotes,
+          validated_by: 'Human Reviewer' // Could be replaced with actual user info
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Validation result:', result);
+      
+      // Update current result with validation status
+      if (currentResult && currentResult.complaint_id === complaintId) {
+        setCurrentResult({
+          ...currentResult,
+          human_validation: {
+            status,
+            validated_by: 'Human Reviewer',
+            validation_date: new Date().toISOString(),
+            feedback_notes: feedbackNotes
+          }
+        });
+      }
+      
+      // If approved, show spinner for external system updates
+      if (status === 'approved') {
+        setIsUpdatingExternalSystems(true);
+        
+        // Simulate external system updates (replace with actual API calls)
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second simulation
+        
+        setIsUpdatingExternalSystems(false);
+      }
+      
+      // Refresh history to show updated validation status
+      fetchHistory();
+      
+    } catch (err) {
+      console.error('Error submitting validation:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while submitting validation');
+      setIsUpdatingExternalSystems(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -466,6 +528,93 @@ const App = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Human Validation Section */}
+                <div className="validation-section">
+                  <h3>👤 Human Validation</h3>
+                  {isUpdatingExternalSystems ? (
+                    <div className="external-systems-update">
+                      <div className="loading-spinner"></div>
+                      <p className="update-message">
+                        🔄 Updating external systems with approved actions...
+                      </p>
+                      <div className="system-updates">
+                        <div className="system-update-item">
+                          <span className="update-icon">📋</span>
+                          <span>Creating case management tickets</span>
+                        </div>
+                        <div className="system-update-item">
+                          <span className="update-icon">📧</span>
+                          <span>Notifying responsible teams</span>
+                        </div>
+                        <div className="system-update-item">
+                          <span className="update-icon">⚖️</span>
+                          <span>Updating regulatory compliance records</span>
+                        </div>
+                        <div className="system-update-item">
+                          <span className="update-icon">📊</span>
+                          <span>Logging metrics and analytics</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : currentResult.human_validation?.status === 'pending' || !currentResult.human_validation ? (
+                    <div className="validation-pending">
+                      <p className="validation-prompt">
+                        Please review the AI analysis above. Are you satisfied with the quality and accuracy of this response?
+                      </p>
+                      <div className="validation-buttons">
+                        <button 
+                          className="validation-btn approve"
+                          onClick={() => handleValidation('approved', currentResult.complaint_id)}
+                        >
+                          ✅ Approve Analysis
+                        </button>
+                        <button 
+                          className="validation-btn reject"
+                          onClick={() => handleValidation('rejected', currentResult.complaint_id)}
+                        >
+                          ❌ Reject Analysis
+                        </button>
+                      </div>
+                      <div className="validation-feedback">
+                        <textarea 
+                          placeholder="Optional: Add feedback notes for quality improvement..."
+                          className="feedback-textarea"
+                          id={`feedback-${currentResult.complaint_id}`}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`validation-completed ${currentResult.human_validation.status}`}>
+                      <div className="validation-status">
+                        {currentResult.human_validation.status === 'approved' ? (
+                          <span className="status-approved">✅ Analysis Approved</span>
+                        ) : (
+                          <span className="status-rejected">❌ Analysis Rejected</span>
+                        )}
+                        {currentResult.human_validation.validated_by && (
+                          <span className="validated-by">by {currentResult.human_validation.validated_by}</span>
+                        )}
+                        {currentResult.human_validation.validation_date && (
+                          <span className="validation-date">
+                            on {new Date(currentResult.human_validation.validation_date).toLocaleDateString('en-GB')}
+                          </span>
+                        )}
+                      </div>
+                      {currentResult.human_validation.feedback_notes && (
+                        <div className="validation-notes">
+                          <strong>Feedback:</strong> {currentResult.human_validation.feedback_notes}
+                        </div>
+                      )}
+                      {currentResult.human_validation.status === 'approved' && (
+                        <div className="action-completion-status">
+                          <span className="completion-icon">🎯</span>
+                          <span className="completion-text">Action plan has been implemented in external systems</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Full JSON Details */}
                 <details className="full-analysis-details">

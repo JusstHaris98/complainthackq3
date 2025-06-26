@@ -7,6 +7,7 @@ from models.complaint_input import ComplaintInput
 import asyncio
 import json
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,6 +24,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Validation request model
+class ValidationRequest(BaseModel):
+    status: str  # 'approved' or 'rejected'
+    feedback_notes: str = ""
+    validated_by: str = "Human Reviewer"
 
 connections = set()
 complaint_history = []
@@ -70,6 +77,41 @@ async def analyze_complaint(complaint: ComplaintInput):
     response = await process_complaint(complaint.text, send_log)
     complaint_history.append(response)
     return response
+
+@app.post("/complaint/{complaint_id}/validate")
+async def validate_complaint(complaint_id: str, validation: ValidationRequest):
+    """
+    Endpoint to handle human validation of AI analysis results
+    """
+    # Find the complaint in history
+    complaint_found = None
+    for i, complaint in enumerate(complaint_history):
+        if complaint.get("complaint_id") == complaint_id:
+            complaint_found = complaint
+            complaint_index = i
+            break
+    
+    if not complaint_found:
+        return {"error": "Complaint not found", "complaint_id": complaint_id}, 404
+    
+    # Add validation information to the complaint
+    validation_data = {
+        "status": validation.status,
+        "validated_by": validation.validated_by,
+        "validation_date": datetime.now().isoformat(),
+        "feedback_notes": validation.feedback_notes
+    }
+    
+    # Update the complaint with validation data
+    complaint_history[complaint_index]["human_validation"] = validation_data
+    
+    # Return the updated complaint
+    return {
+        "message": "Validation submitted successfully",
+        "complaint_id": complaint_id,
+        "validation": validation_data,
+        "updated_complaint": complaint_history[complaint_index]
+    }
 
 # Commented out to run frontend and backend separately
 # app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
